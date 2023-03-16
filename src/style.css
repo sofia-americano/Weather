@@ -26,6 +26,16 @@ li {
     line-height: 1;
 }
 
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-family: monospace;
+    color: black;
+}
+
 .temp {
     border: 1px solid #dadde1;
     border-radius: 15px;
