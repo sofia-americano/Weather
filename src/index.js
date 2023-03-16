@@ -44,3 +44,27 @@ function getCurrentLocationWeather() {
 
 form.addEventListener("submit", searchCity);
 currentLocationBtn.addEventListener("click", getCurrentLocationWeather);
+
+let celsiusBtn = document.querySelector("#celsius-btn");
+let fahrenheitBtn = document.querySelector("#fahrenheit-btn");
+let temperatureElement = document.querySelector(".temperature");
+
+function convertToFahrenheit(temperature) {
+    return (temperature * 9 / 5) + 32;
+}
+
+function convertToCelsius(temperature) {
+    return (temperature - 32) * 5 / 9;
+}
+
+function updateTemperatureUnits(event) {
+    let currentTemperature = Number(temperatureElement.textContent);
+    if (event.target.id === "celsius-btn") {
+        temperatureElement.textContent = Math.round(convertToCelsius(currentTemperature));
+    } else if (event.target.id === "fahrenheit-btn") {
+        temperatureElement.textContent = Math.round(convertToFahrenheit(currentTemperature));
+    }
+}
+
+celsiusBtn.addEventListener("click", updateTemperatureUnits);
+fahrenheitBtn.addEventListener("click", updateTemperatureUnits);
