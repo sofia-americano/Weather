@@ -3,9 +3,13 @@ let input = document.querySelector(".form-control");
 let city = document.querySelector(".city");
 let currentLocationBtn = document.querySelector(".location");
 let liDate = document.querySelector(".date");
-let currentDate = new Date().toLocaleDateString(`en-US`, { weekday: `long`, hour12: false, hour: `numeric`, minute: `numeric` });
-liDate.textContent = currentDate;
 let weatherIcon = document.querySelector(".temp-icon");
+let apiKey = `ac790ft09bcaba4543326a24oe917e8b`;
+let weatherEndpoint = `https://api.shecodes.io/weather/v1/current`;
+let tempElement = document.querySelector(".temperature");
+let conditionElement = document.querySelector(".condition");
+let humidityElement = document.querySelector(".description li:nth-child(1)");
+let windElement = document.querySelector(".description li:nth-child(2)");
 
 
 form.addEventListener("submit", function (event) {
@@ -14,23 +18,32 @@ form.addEventListener("submit", function (event) {
 });
 
 function showWeather(response) {
-    let temperature = Math.round(response.data.main.temp);
-    city.innerHTML = `${response.data.name}, ${response.data.sys.country}`;
-    let tempElement = document.querySelector(".temperature");
+    let temperature = Math.round(response.data.temperature.current);
+    city.innerHTML = `${response.data.city}, ${response.data.country}`;
     tempElement.innerHTML = temperature;
-    let condition = response.data.weather[0].main;
-    let conditionElement = document.querySelector(".condition");
+
+    let condition = response.data.condition.description;
     conditionElement.innerHTML = condition;
-    let tempIcon = response.data.weather[0].icon;
-    weatherIcon.setAttribute("src", `https://openweathermap.org/img/wn/${tempIcon}@2x.png`);
+
+    let iconUrl = response.data.condition.icon_url;
+    weatherIcon.setAttribute("src", iconUrl);
+
+    let humidity = response.data.temperature.humidity;
+    let wind = response.data.wind.speed;
+    humidityElement.innerHTML = `Humidity: ${humidity}%`;
+    windElement.innerHTML = `Wind: ${wind}km/h`;
+    
+    let currentTimestampinSeconds = response.data.time;
+    let currentTimestampinMilliseconds = currentTimestampinSeconds * 1000;
+    let currentDate = new Date(currentTimestampinMilliseconds).toLocaleDateString(`en-US`, { weekday: `long`, hour12: false, hour: `numeric`, minute: `numeric` });
+    liDate.textContent = currentDate;
 }
 
 function searchCity(event) {
     event.preventDefault();
     let input = document.querySelector(".form-control");
     let city = input.value.trim();
-    let apiKey = `0d6ea3645830e009a81b0306f9b9e6b5`;
-    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    let apiUrl = `${weatherEndpoint}?query=${city}&key=${apiKey}&units=metric`;
     axios.get(apiUrl).then(showWeather);
 }
 
@@ -39,8 +52,7 @@ function getCurrentLocationWeather() {
         function (position) {
             let lat = position.coords.latitude;
             let long = position.coords.longitude;
-            let apiKey = `0d6ea3645830e009a81b0306f9b9e6b5`;
-            let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=${apiKey}&units=metric`;
+            let apiUrl = `${weatherEndpoint}?lat=${lat}&lon=${long}&key=${apiKey}&units=metric`;
             axios.get(apiUrl).then(showWeather);
         },
         function (error) {
@@ -73,6 +85,6 @@ function updateTemperatureUnits(event) {
     }
 }
 
-
+window.addEventListener("load", getCurrentLocationWeather);
 celsiusBtn.addEventListener("click", updateTemperatureUnits);
 fahrenheitBtn.addEventListener("click", updateTemperatureUnits);
