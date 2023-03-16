@@ -5,6 +5,8 @@ let currentLocationBtn = document.querySelector(".location");
 let liDate = document.querySelector(".date");
 let currentDate = new Date().toLocaleDateString(`en-US`, { weekday: `long`, hour12: false, hour: `numeric`, minute: `numeric` });
 liDate.textContent = currentDate;
+let weatherIcon = document.querySelector(".temp-icon");
+
 
 form.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -16,6 +18,11 @@ function showWeather(response) {
     city.innerHTML = `${response.data.name}, ${response.data.sys.country}`;
     let tempElement = document.querySelector(".temperature");
     tempElement.innerHTML = temperature;
+    let condition = response.data.weather[0].main;
+    let conditionElement = document.querySelector(".condition");
+    conditionElement.innerHTML = condition;
+    let tempIcon = response.data.weather[0].icon;
+    weatherIcon.setAttribute("src", `https://openweathermap.org/img/wn/${tempIcon}@2x.png`);
 }
 
 function searchCity(event) {
@@ -65,6 +72,7 @@ function updateTemperatureUnits(event) {
         temperatureElement.textContent = Math.round(convertToFahrenheit(currentTemperature));
     }
 }
+
 
 celsiusBtn.addEventListener("click", updateTemperatureUnits);
 fahrenheitBtn.addEventListener("click", updateTemperatureUnits);
